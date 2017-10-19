@@ -12,6 +12,10 @@ from the same directory.
 
 # Start with the common settings
 from .common import *  # pylint: disable=wildcard-import, unused-wildcard-import
+from openedx.core.djangoapps.theming.helpers_dirs import (
+    get_theme_base_dirs_from_settings,
+    enable_theming_with_settings
+)
 
 # Use an in-memory database since this settings file is only used for updating assets
 DATABASES = {
@@ -46,3 +50,15 @@ WEBPACK_LOADER['DEFAULT']['STATS_FILE'] = STATIC_ROOT / "webpack-stats.json"
 # 1. Uglify is by far the slowest part of the build process
 # 2. Having full source code makes debugging tests easier for developers
 os.environ['REQUIRE_BUILD_PROFILE_OPTIMIZE'] = 'none'
+
+########################## Comprehensive Theming  #######################
+
+# Set up comprehensive theming after all other settings have been set to avoid
+# modifying paths before ENABLE_COMPREHENSIVE_THEMING has its final value.
+if ENABLE_COMPREHENSIVE_THEMING:
+    LOCALE_PATHS = enable_theming_with_settings(
+        MAKO_TEMPLATES['main'],
+        get_theme_base_dirs_from_settings(COMPREHENSIVE_THEME_DIRS),
+        LOCALE_PATHS,
+        COMPREHENSIVE_THEME_LOCALE_PATHS
+    )

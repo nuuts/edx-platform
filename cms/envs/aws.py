@@ -16,6 +16,10 @@ import json
 from .common import *
 
 from openedx.core.lib.logsettings import get_logger_config
+from openedx.core.djangoapps.theming.helpers_dirs import (
+    enable_theming_with_settings,
+    get_theme_base_dirs_from_settings
+)
 import os
 
 from path import Path as path
@@ -201,10 +205,6 @@ for name, value in ENV_TOKENS.get("CODE_JAIL", {}).items():
 COURSES_WITH_UNSAFE_CODE = ENV_TOKENS.get("COURSES_WITH_UNSAFE_CODE", [])
 
 ASSET_IGNORE_REGEX = ENV_TOKENS.get('ASSET_IGNORE_REGEX', ASSET_IGNORE_REGEX)
-
-# following setting is for backward compatibility
-if ENV_TOKENS.get('COMPREHENSIVE_THEME_DIR', None):
-    COMPREHENSIVE_THEME_DIR = ENV_TOKENS.get('COMPREHENSIVE_THEME_DIR')
 
 COMPREHENSIVE_THEME_DIRS = ENV_TOKENS.get('COMPREHENSIVE_THEME_DIRS', COMPREHENSIVE_THEME_DIRS) or []
 
@@ -534,3 +534,15 @@ PARENTAL_CONSENT_AGE_LIMIT = ENV_TOKENS.get(
 
 # Allow extra middleware classes to be added to the app through configuration.
 MIDDLEWARE_CLASSES.extend(ENV_TOKENS.get('EXTRA_MIDDLEWARE_CLASSES', []))
+
+########################## Comprehensive Theming  #######################
+
+# Set up comprehensive theming after all other settings have been set to avoid
+# modifying paths before ENABLE_COMPREHENSIVE_THEMING has its final value.
+if ENABLE_COMPREHENSIVE_THEMING:
+    LOCALE_PATHS = enable_theming_with_settings(
+        MAKO_TEMPLATES['main'],
+        get_theme_base_dirs_from_settings(COMPREHENSIVE_THEME_DIRS),
+        LOCALE_PATHS,
+        COMPREHENSIVE_THEME_LOCALE_PATHS
+    )

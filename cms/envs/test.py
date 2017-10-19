@@ -38,6 +38,10 @@ from lms.envs.test import (
     JWT_AUTH,
     REGISTRATION_EXTRA_FIELDS,
 )
+from openedx.core.djangoapps.theming.helpers_dirs import (
+    get_theme_base_dirs_from_settings,
+    enable_theming_with_settings
+)
 
 # mongo connection settings
 MONGO_PORT_NUM = int(os.environ.get('EDXAPP_TEST_MONGO_PORT', '27017'))
@@ -363,3 +367,15 @@ VIDEO_TRANSCRIPTS_SETTINGS = dict(
     ),
     DIRECTORY_PREFIX='video-transcripts/',
 )
+
+########################## Comprehensive Theming  #######################
+
+# Set up comprehensive theming after all other settings have been set to avoid
+# modifying paths before ENABLE_COMPREHENSIVE_THEMING has its final value.
+if ENABLE_COMPREHENSIVE_THEMING:
+    LOCALE_PATHS = enable_theming_with_settings(
+        MAKO_TEMPLATES['main'],
+        get_theme_base_dirs_from_settings(COMPREHENSIVE_THEME_DIRS),
+        LOCALE_PATHS,
+        COMPREHENSIVE_THEME_LOCALE_PATHS
+    )

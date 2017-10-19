@@ -83,6 +83,7 @@ from openedx.core.djangoapps.programs.models import ProgramsApiConfig
 from openedx.core.djangoapps.programs.utils import ProgramProgressMeter
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.core.djangoapps.theming import helpers as theming_helpers
+from openedx.core.djangoapps.theming import helpers_dirs as theming_dirs_helpers
 from openedx.core.djangoapps.user_api.preferences import api as preferences_api
 from openedx.core.djangolib.markup import HTML
 from openedx.features.course_experience import course_home_url_name
@@ -2377,7 +2378,7 @@ def activate_account(request, key):
     """When link in activation e-mail is clicked"""
 
     # If request is in Studio call the appropriate view
-    if theming_helpers.get_project_root_name().lower() == u'cms':
+    if theming_dirs_helpers.get_project_root_name().lower() == u'cms':
         return activate_account_studio(request, key)
 
     try:

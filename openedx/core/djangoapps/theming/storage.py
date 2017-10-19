@@ -14,11 +14,11 @@ from pipeline.storage import PipelineMixin
 
 from openedx.core.djangoapps.theming.helpers import (
     get_current_theme,
-    get_project_root_name,
     get_theme_base_dir,
     get_themes,
     is_comprehensive_theming_enabled
 )
+from openedx.core.djangoapps.theming.helpers_dirs import get_project_root_name
 
 
 class ThemeStorage(StaticFilesStorage):

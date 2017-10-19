@@ -26,6 +26,10 @@ from warnings import filterwarnings, simplefilter
 
 from util.db import NoOpMigrationModules
 from openedx.core.lib.tempdir import mkdtemp_clean
+from openedx.core.djangoapps.theming.helpers_dirs import (
+    get_theme_base_dirs_from_settings,
+    enable_theming_with_settings
+)
 
 # This patch disables the commit_on_success decorator during tests
 # in TestCase subclasses.
@@ -608,3 +612,15 @@ ENTERPRISE_CONSENT_API_URL = 'http://enterprise.example.com/consent/api/v1/'
 ACTIVATION_EMAIL_FROM_ADDRESS = 'test_activate@edx.org'
 
 TEMPLATES[0]['OPTIONS']['debug'] = True
+
+########################## Comprehensive Theming  #######################
+
+# Set up comprehensive theming after all other settings have been set to avoid
+# modifying paths before ENABLE_COMPREHENSIVE_THEMING has its final value.
+if ENABLE_COMPREHENSIVE_THEMING:
+    LOCALE_PATHS = enable_theming_with_settings(
+        MAKO_TEMPLATES['main'],
+        get_theme_base_dirs_from_settings(COMPREHENSIVE_THEME_DIRS),
+        LOCALE_PATHS,
+        COMPREHENSIVE_THEME_LOCALE_PATHS
+    )

@@ -134,7 +134,8 @@
             margin: $baseline/2 0;
 
             .course-title {
-              a, span {
+              a,
+              span {
                 @extend %t-title3;
                 @extend %t-light;
 
@@ -201,7 +202,8 @@
               border: 1px solid $white;
               text-align: center;
 
-              &:hover, &:focus {
+              &:hover,
+              &:focus {
                 color: $gray-d3;
                 border: 1px solid $gray-l4;
               }
@@ -316,7 +318,8 @@
                   .action {
                     @include margin-right(0);
 
-                    &:hover, &:focus {
+                    &:hover,
+                    &:focus {
                       border: 1px solid transparent;
                     }
                   }
@@ -328,7 +331,7 @@
           .course-status {
             background: $yellow;
             border: 1px solid $border-color-2;
-            box-shadow: 0 1px 0 0 rgba(255,255,255, 0.6);
+            box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.6);
             margin-top: 17px;
 
             @include margin-right(flex-gutter());
@@ -395,7 +398,7 @@
             display: none;
             padding: ($baseline/2) $baseline;
             border-top: 1px solid $gray-l4;
-            color: $base-font-color; // Overrides the normal white color in this one case
+            color: $body-color; // Overrides the normal white color in this one case
 
             // STATE: shown
             &.is-shown {
@@ -437,18 +440,20 @@
             .message-copy .copy {
               @extend %t-copy-sub1;
 
-              margin: 2px 0 0 0;
+              margin: 2px 0 0;
             }
 
             // CASE: expandable
             &.is-expandable {
               .wrapper-tip {
-                .message-title, .message-copy {
+                .message-title,
+                .message-copy {
                   margin-bottom: 0;
                   display: inline-block;
                 }
 
-                .message-title .value, .message-copy {
+                .message-title .value,
+                .message-copy {
                   @include transition(color $tmg-f2 ease-in-out 0s);
                 }
 
@@ -456,7 +461,9 @@
                 &:hover {
                   cursor: pointer;
 
-                  .message-title .value, .message-copy, .ui-toggle-expansion {
+                  .message-title .value,
+                  .message-copy,
+                  .ui-toggle-expansion {
                     color: $link-color;
                   }
                 }
@@ -571,7 +578,8 @@
                   color: $white; // nasty but needed override for poor <span> styling
                 }
 
-                .copy, .copy-sub {
+                .copy,
+                .copy-sub {
                   display: inline-block;
                   vertical-align: middle;
                 }
@@ -612,7 +620,7 @@
                   @include float(right);
                   @include margin-right(5px);
 
-                  background-image: none ;
+                  background-image: none;
                   text-shadow: none;
                   box-shadow: none;
                   text-transform: none;
@@ -641,7 +649,8 @@
                     &.disabled {
                       cursor: default !important;
 
-                      &:hover, &:focus {
+                      &:hover,
+                      &:focus {
                         @include background-image(linear-gradient(top, #EEE 0%, #C2C2C2 50%, #ABABAB 50%, #B0B0B0 100%));
 
                         background: #eee;
@@ -701,7 +710,8 @@
                 font-weight: bold;
                 letter-spacing: 0;
 
-                &:hover, &:focus {
+                &:hover,
+                &:focus {
                   text-decoration: none;
                 }
               }
@@ -725,7 +735,7 @@
                   @include float(right);
 
                   .action {
-                    @include margin(0, 0, ($baseline/2), ($baseline*.75));
+                    @include margin(0, 0, ($baseline/2), ($baseline*0.75));
 
                     float: none;
                     text-align: center;
@@ -748,11 +758,12 @@
                     border-radius: 3px;
                     display: block;
 
-                    @include padding(7px, ($baseline*.75), 7px, ($baseline*.75));
+                    @include padding(7px, ($baseline*0.75), 7px, ($baseline*0.75));
 
                     text-align: center;
 
-                    a:link, a:visited {
+                    a:link,
+                    a:visited {
                       color: #fff;
                     }
                   }
@@ -1048,7 +1059,7 @@
 
     color: $lighter-base-font-color;
     margin-bottom: $baseline;
-    text-shadow: 0 1px rgba(255,255,255, 0.6);
+    text-shadow: 0 1px rgba(255, 255, 255, 0.6);
   }
 
   a {
@@ -1066,7 +1077,8 @@
     margin-left: ($baseline/4);
     padding: $baseline*0.75 $baseline;
 
-    &:hover, &:focus {
+    &:hover,
+    &:focus {
       background: theme-color('primary')-l2;
       text-decoration: none;
     }
@@ -1206,7 +1218,7 @@
     .btn {
       font-size: 16px;
       line-height: 25.16px;
-      padding: 10px 10px;
+      padding: 10px;
       border: 1px solid #0079bc;
       color: #0079bc;
       text-decoration: none;
@@ -1218,7 +1230,6 @@
       color: #fff;
       background-color: #0079bc;
     }
-
   }
 }
 
@@ -1269,7 +1280,6 @@ p.course-block {
   padding: ($baseline/4);
   border-width: 1px;
   background: #fdfbe4;
-
 }
 
 .enter-course-blocked {
@@ -1282,11 +1292,11 @@ p.course-block {
   padding: 6px 32px 7px;
   text-align: center;
   margin-top: 16px;
-  opacity:0.5;
-  background:#808080;
-  border:0;
-  color:white;
-  box-shadow:none;
+  opacity: 0.5;
+  background: #808080;
+  border: 0;
+  color: theme-color("inverse");
+  box-shadow: none;
 
   &.archived {
     @include button(simple, $button-archive-color);
@@ -1332,7 +1342,7 @@ a.fade-cover {
         @extend %t-title5;
         @extend %t-weight4;
 
-        font-family: $f-sans-serif;
+        font-family: $font-family-sans-serif;
 
         // Overriding Platform h2 styles
         text-transform: none;
@@ -1393,7 +1403,7 @@ a.fade-cover {
 .activation-message-container {
   @include clearfix();
 
-  margin: 0 auto 0;
+  margin: 0 auto;
   padding-top: ($baseline/2);
   max-width: grid-width(12);
   min-width: 760px;
@@ -1509,12 +1519,13 @@ a.fade-cover {
     margin-top: 10px;
     margin-left: 2.5%;
     margin-right: 2.5%;
-    color: $white;
+    color: theme-color("inverse");
   }
 
-  .survey_button:visited, .survey_button:hover, .survey_button:focus {
-    color: $white;
+  .survey_button:visited,
+  .survey_button:hover,
+  .survey_button:focus {
+    color: theme-color("inverse");
     text-decoration: none;
   }
-
 }

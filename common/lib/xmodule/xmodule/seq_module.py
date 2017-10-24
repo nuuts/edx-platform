@@ -312,6 +312,7 @@ class SequenceModule(SequenceFields, ProctoringFields, XModule):
             'next_url': context.get('next_url'),
             'prev_url': context.get('prev_url'),
             'banner_text': banner_text,
+            'disable_navigation': context.get('disable_navigation', False)
         }
         fragment.add_content(self.system.render_template("seq_module.html", params))
 

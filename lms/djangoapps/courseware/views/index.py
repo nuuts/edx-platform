@@ -8,12 +8,12 @@ import logging
 import urllib
 
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.template.context_processors import csrf
 from django.core.urlresolvers import reverse
 from django.http import Http404
+from django.template.context_processors import csrf
 from django.utils.decorators import method_decorator
+from django.utils.translation import ugettext as _
 from django.views.decorators.cache import cache_control
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.generic import View
@@ -29,19 +29,20 @@ from openedx.core.djangoapps.crawlers.models import CrawlersConfig
 from openedx.core.djangoapps.lang_pref import LANGUAGE_KEY
 from openedx.core.djangoapps.monitoring_utils import set_custom_metrics_for_course_key
 from openedx.core.djangoapps.user_api.preferences.api import get_user_preference
+from openedx.core.djangoapps.util.user_messages import PageLevelMessages
 from openedx.core.djangoapps.waffle_utils import WaffleSwitchNamespace
+from openedx.core.djangolib.markup import HTML, Text
 from openedx.features.course_experience import COURSE_OUTLINE_PAGE_FLAG, default_course_url_name
 from openedx.features.course_experience.views.course_sock import CourseSockFragmentView
 from openedx.features.enterprise_support.api import data_sharing_consent_required
 from shoppingcart.models import CourseRegistrationCode
 from student.views import is_course_blocked
-from student.models import CourseEnrollment
 from util.views import ensure_valid_course_key
 from xmodule.modulestore.django import modulestore
 from xmodule.x_module import STUDENT_VIEW
-
+from .views import CourseTabView
 from ..access import has_access
-from ..access_utils import in_preview_mode, check_course_open_for_learner
+from ..access_utils import check_course_open_for_learner
 from ..courses import get_course_with_access, get_current_child, get_studio_url
 from ..entrance_exams import (
     course_has_entrance_exam,
@@ -52,9 +53,6 @@ from ..entrance_exams import (
 from ..masquerade import setup_masquerade
 from ..model_data import FieldDataCache
 from ..module_render import get_module_for_descriptor, toc_for_course
-from .views import (
-    CourseTabView,
-)
 
 log = logging.getLogger("edx.courseware.views.index")
 
@@ -66,7 +64,6 @@ class CoursewareIndex(View):
     """
     View class for the Courseware page.
     """
-    # @method_decorator(login_required)
     @method_decorator(ensure_csrf_cookie)
     @method_decorator(cache_control(no_cache=True, no_store=True, must_revalidate=True))
     @method_decorator(ensure_valid_course_key)
@@ -148,6 +145,28 @@ class CoursewareIndex(View):
                 self._save_positions()
                 self._prefetch_and_bind_section()
 
+        if not request.user.is_authenticated():
+            qs = urllib.urlencode({
+                'course_id': self.course_key,
+                'enrollment_action': 'enroll',
+                'email_opt_in': False,
+            })
+
+            PageLevelMessages.register_warning_message(
+                request,
+                Text(_("You are not signed in. To see additional course content, {sign_in_link} or "
+                       "{register_link}, and enroll in this course.")).format(
+                    sign_in_link=HTML('<a href="{url}">{sign_in_label}</a>').format(
+                        sign_in_label=_('sign in'),
+                        url='{}?{}'.format(reverse('signin_user'), qs),
+                    ),
+                    register_link=HTML('<a href="/{url}">{register_label}</a>').format(
+                        register_label=_('register'),
+                        url='{}?{}'.format(reverse('register_user'), qs),
+                    ),
+                )
+            )
+
         return render_to_response('courseware/courseware.html', self._create_courseware_context(request))
 
     def _redirect_if_not_requested_section(self):
@@ -188,7 +207,7 @@ class CoursewareIndex(View):
         """
         redeemed_registration_codes = []
 
-        if not self.request.user.is_anonymous:
+        if self.request.user.is_authenticated():
             self.real_user = User.objects.prefetch_related("groups").get(id=self.real_user.id)
             redeemed_registration_codes = CourseRegistrationCode.objects.filter(
                 course_id=self.course_key,
@@ -225,7 +244,7 @@ class CoursewareIndex(View):
         """
         language_preference = settings.LANGUAGE_CODE
 
-        if not self.request.user.is_anonymous:
+        if self.request.user.is_authenticated():
             language_preference = get_user_preference(self.real_user, LANGUAGE_KEY)
 
         return language_preference
@@ -456,6 +475,7 @@ class CoursewareIndex(View):
             'activate_block_id': self.request.GET.get('activate_block_id'),
             'requested_child': self.request.GET.get("child"),
             'progress_url': reverse('progress', kwargs={'course_id': unicode(self.course_key)}),
+            'disable_navigation': not self.request.user.is_authenticated(),
         }
         if previous_of_active_section:
             section_context['prev_url'] = _compute_section_url(previous_of_active_section, 'last')

@@ -38,7 +38,7 @@ def derive_settings(module):
                 setattr(module, setting_name, setting_val)
         elif isinstance(setting_name, dict):
             # To allow more complex values such as values of dictionary with a particular key,
-            # you can write your own getter and setter and register them as dictionary.
+            # you can write your own getter and setter and register them as a dictionary.
             # A dictionary setting is expected to have two keys - 'getter' and 'setter'.
             # The 'getter' value is a callable that gets the derived value from the module.
             # The 'setter' value is a callable that sets the derived value into the module.

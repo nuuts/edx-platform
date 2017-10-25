@@ -1,5 +1,6 @@
 
 import os
+import six
 from django.apps import AppConfig
 from django.conf import settings
 from django.core.checks import Error, Tags, register
@@ -24,7 +25,7 @@ def check_comprehensive_theme_settings(app_configs, **kwargs):
     Returns:
         List of any Errors.
     """
-    if not getattr(settings, "ENABLE_COMPREHENSIVE_THEMING", False):
+    if not getattr(settings, "ENABLE_COMPREHENSIVE_THEMING"):
         # Only perform checks when comprehensive theming is enabled.
         return []
 
@@ -54,7 +55,7 @@ def check_comprehensive_theme_settings(app_configs, **kwargs):
                     id='openedx.core.djangoapps.theming.E004',
                 )
             )
-        if not all([isinstance(theme_dir, basestring) for theme_dir in theme_dirs]):
+        if not all([isinstance(theme_dir, six.string_types) for theme_dir in theme_dirs]):
             errors.append(
                 Error(
                     "COMPREHENSIVE_THEME_DIRS must contain only strings.",

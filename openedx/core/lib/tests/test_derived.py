@@ -5,6 +5,7 @@ Tests for derived.py
 from unittest import TestCase
 from openedx.core.lib.derived import derived, derive_settings, clear_for_tests
 
+
 class TestDerivedSettings(TestCase):
     """
     Test settings that are derived from other settings.

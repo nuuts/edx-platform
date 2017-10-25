@@ -25,11 +25,8 @@ from uuid import uuid4
 from warnings import filterwarnings, simplefilter
 
 from util.db import NoOpMigrationModules
+from openedx.core.lib.derived import derive_settings
 from openedx.core.lib.tempdir import mkdtemp_clean
-from openedx.core.djangoapps.theming.helpers_dirs import (
-    get_theme_base_dirs_from_settings,
-    enable_theming_with_settings
-)
 
 # This patch disables the commit_on_success decorator during tests
 # in TestCase subclasses.
@@ -513,7 +510,7 @@ MICROSITE_LOGISTRATION_HOSTNAME = 'logistration.testserver'
 TEST_THEME = COMMON_ROOT / "test" / "test-theme"
 
 # add extra template directory for test-only templates
-MAKO_TEMPLATES['main'].extend([
+MAIN_MAKO_TEMPLATES_BASE.extend([
     COMMON_ROOT / 'test' / 'templates',
     COMMON_ROOT / 'test' / 'test_sites',
     REPO_ROOT / 'openedx' / 'core' / 'djangolib' / 'tests' / 'templates',
@@ -613,14 +610,7 @@ ACTIVATION_EMAIL_FROM_ADDRESS = 'test_activate@edx.org'
 
 TEMPLATES[0]['OPTIONS']['debug'] = True
 
-########################## Comprehensive Theming  #######################
+########################## Derive Any Derived Settings  #######################
 
-# Set up comprehensive theming after all other settings have been set to avoid
-# modifying paths before ENABLE_COMPREHENSIVE_THEMING has its final value.
-if ENABLE_COMPREHENSIVE_THEMING:
-    LOCALE_PATHS = enable_theming_with_settings(
-        MAKO_TEMPLATES['main'],
-        get_theme_base_dirs_from_settings(COMPREHENSIVE_THEME_DIRS),
-        LOCALE_PATHS,
-        COMPREHENSIVE_THEME_LOCALE_PATHS
-    )
+derive_settings(sys.modules[__name__])
+MAKO_TEMPLATES['main'] = MAIN_MAKO_TEMPLATES

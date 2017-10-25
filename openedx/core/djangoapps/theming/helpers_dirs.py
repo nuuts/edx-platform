@@ -3,30 +3,6 @@ from path import Path
 from django.conf import settings
 
 
-def enable_theming_with_settings(mako_templates, themes_dirs, locale_paths, themes_locale_paths):
-    """
-    Add directories and relevant paths to settings for comprehensive theming.
-
-    Params:
-        - mako_templates (list): List of paths to mako templates.
-        - theme_dirs (list): List of paths to base comprehensive theming dirs.
-        - locale_paths (list): List of paths to locales.
-        - themes_locale_paths(list): List of path to be added to locale paths for comprehensive themes.
-
-    Returns:
-        - new value for LOCALE_PATHS
-    """
-    # Add Mako template paths to settings for comprehensive theming.
-    for theme in get_themes_unchecked(themes_dirs):
-        if theme.themes_base_dir not in mako_templates:
-            mako_templates.insert(0, theme.themes_base_dir)
-
-    # Add locale paths to settings for comprehensive theming.
-    for locale_path in themes_locale_paths:
-        locale_paths += (Path(locale_path), )
-    return locale_paths
-
-
 def get_theme_base_dirs_from_settings(theme_dirs=None):
     """
     Return base directories that contains all the themes.

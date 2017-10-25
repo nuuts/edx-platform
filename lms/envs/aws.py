@@ -25,11 +25,8 @@ import warnings
 import dateutil
 
 from .common import *
+from openedx.core.lib.derived import derive_settings
 from openedx.core.lib.logsettings import get_logger_config
-from openedx.core.djangoapps.theming.helpers_dirs import (
-    get_theme_base_dirs_from_settings,
-    enable_theming_with_settings
-)
 import os
 
 from path import Path as path
@@ -1073,14 +1070,7 @@ ACE_ROUTING_KEY = ENV_TOKENS.get('ACE_ROUTING_KEY', ACE_ROUTING_KEY)
 # Allow extra middleware classes to be added to the app through configuration.
 MIDDLEWARE_CLASSES.extend(ENV_TOKENS.get('EXTRA_MIDDLEWARE_CLASSES', []))
 
-########################## Comprehensive Theming  #######################
+########################## Derive Any Derived Settings  #######################
 
-# Set up comprehensive theming after all other settings have been set to avoid
-# modifying paths before ENABLE_COMPREHENSIVE_THEMING has its final value.
-if ENABLE_COMPREHENSIVE_THEMING:
-    LOCALE_PATHS = enable_theming_with_settings(
-        MAKO_TEMPLATES['main'],
-        get_theme_base_dirs_from_settings(COMPREHENSIVE_THEME_DIRS),
-        LOCALE_PATHS,
-        COMPREHENSIVE_THEME_LOCALE_PATHS
-    )
+derive_settings(sys.modules[__name__])
+MAKO_TEMPLATES['main'] = MAIN_MAKO_TEMPLATES

@@ -12,10 +12,7 @@ from the same directory.
 
 # Start with the common settings
 from .common import *  # pylint: disable=wildcard-import, unused-wildcard-import
-from openedx.core.djangoapps.theming.helpers_dirs import (
-    get_theme_base_dirs_from_settings,
-    enable_theming_with_settings
-)
+from openedx.core.lib.derived import derive_settings
 
 # Use an in-memory database since this settings file is only used for updating assets
 DATABASES = {
@@ -64,14 +61,7 @@ WEBPACK_LOADER['DEFAULT']['STATS_FILE'] = STATIC_ROOT / "webpack-stats.json"
 # 2. Having full source code makes debugging tests easier for developers
 os.environ['REQUIRE_BUILD_PROFILE_OPTIMIZE'] = 'none'
 
-########################## Comprehensive Theming  #######################
+########################## Derive Any Derived Settings  #######################
 
-# Set up comprehensive theming after all other settings have been set to avoid
-# modifying paths before ENABLE_COMPREHENSIVE_THEMING has its final value.
-if ENABLE_COMPREHENSIVE_THEMING:
-    LOCALE_PATHS = enable_theming_with_settings(
-        MAKO_TEMPLATES['main'],
-        get_theme_base_dirs_from_settings(COMPREHENSIVE_THEME_DIRS),
-        LOCALE_PATHS,
-        COMPREHENSIVE_THEME_LOCALE_PATHS
-    )
+derive_settings(sys.modules[__name__])
+MAKO_TEMPLATES['main'] = MAIN_MAKO_TEMPLATES

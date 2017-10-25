@@ -24,6 +24,7 @@ from path import Path as path
 from warnings import filterwarnings, simplefilter
 from uuid import uuid4
 from util.db import NoOpMigrationModules
+from openedx.core.lib.derived import derive_settings
 
 # import settings from LMS for consistent behavior with CMS
 # pylint: disable=unused-import
@@ -37,10 +38,6 @@ from lms.envs.test import (
     COMPREHENSIVE_THEME_DIRS,
     JWT_AUTH,
     REGISTRATION_EXTRA_FIELDS,
-)
-from openedx.core.djangoapps.theming.helpers_dirs import (
-    get_theme_base_dirs_from_settings,
-    enable_theming_with_settings
 )
 
 # mongo connection settings
@@ -368,14 +365,7 @@ VIDEO_TRANSCRIPTS_SETTINGS = dict(
     DIRECTORY_PREFIX='video-transcripts/',
 )
 
-########################## Comprehensive Theming  #######################
+########################## Derive Any Derived Settings  #######################
 
-# Set up comprehensive theming after all other settings have been set to avoid
-# modifying paths before ENABLE_COMPREHENSIVE_THEMING has its final value.
-if ENABLE_COMPREHENSIVE_THEMING:
-    LOCALE_PATHS = enable_theming_with_settings(
-        MAKO_TEMPLATES['main'],
-        get_theme_base_dirs_from_settings(COMPREHENSIVE_THEME_DIRS),
-        LOCALE_PATHS,
-        COMPREHENSIVE_THEME_LOCALE_PATHS
-    )
+derive_settings(sys.modules[__name__])
+MAKO_TEMPLATES['main'] = MAIN_MAKO_TEMPLATES

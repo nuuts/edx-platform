@@ -4,12 +4,11 @@ via callable methods/lambdas. The derivation time can be controlled to happen af
 other settings have been set. The derived setting can also be overridden by setting the
 derived setting to an actual value.
 """
-
-import logging
-log = logging.getLogger(__name__)
+import six
 
 # Global list holding all settings which will be derived.
 __DERIVED = []
+
 
 def derived(*settings):
     """
@@ -31,12 +30,28 @@ def derive_settings(module):
         - module (module): Module to which the derived settings will be added.
     """
     for setting_name in __DERIVED:
-        try:
+        if isinstance(setting_name, six.string_types):
+            # For a simple attribute, the getter and setter are simply getattr and setattr.
             setting = getattr(module, setting_name)
-        except ValueError:
-            log.warning("Derived setting '%s' was not found - ignoring.", setting_name)
-            continue
-        if callable(setting):
-            setting_val = setting(module)
-            setattr(module, setting_name, setting_val)
-            log.info("Setting '%s' to derived value '%s' in module '%s'", setting_name, setting_val, module)
+            if callable(setting):
+                setting_val = setting(module)
+                setattr(module, setting_name, setting_val)
+        elif isinstance(setting_name, dict):
+            # To allow more complex values such as values of dictionary with a particular key,
+            # you can write your own getter and setter and register them as dictionary.
+            # A dictionary setting is expected to have two keys - 'getter' and 'setter'.
+            # The 'getter' value is a callable that gets the derived value from the module.
+            # The 'setter' value is a callable that sets the derived value into the module.
+            getter = setting_name['getter']
+            setting = getter(module)
+            if callable(setting):
+                setting_val = setting(module)
+                setter = setting_name['setter']
+                setter(module, setting_val)
+
+def clear_for_tests():
+    """
+    Clears all settings to be derived. For tests only.
+    """
+    global __DERIVED
+    __DERIVED = []

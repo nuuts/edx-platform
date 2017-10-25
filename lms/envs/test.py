@@ -613,4 +613,3 @@ TEMPLATES[0]['OPTIONS']['debug'] = True
 ########################## Derive Any Derived Settings  #######################
 
 derive_settings(sys.modules[__name__])
-MAKO_TEMPLATES['main'] = MAIN_MAKO_TEMPLATES

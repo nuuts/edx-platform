@@ -368,4 +368,3 @@ VIDEO_TRANSCRIPTS_SETTINGS = dict(
 ########################## Derive Any Derived Settings  #######################
 
 derive_settings(sys.modules[__name__])
-MAKO_TEMPLATES['main'] = MAIN_MAKO_TEMPLATES

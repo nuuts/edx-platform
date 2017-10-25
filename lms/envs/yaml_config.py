@@ -334,4 +334,3 @@ MIDDLEWARE_CLASSES.extend(ENV_TOKENS.get('EXTRA_MIDDLEWARE_CLASSES', []))
 ########################## Derive Any Derived Settings  #######################
 
 derive_settings(sys.modules[__name__])
-MAKO_TEMPLATES['main'] = MAIN_MAKO_TEMPLATES

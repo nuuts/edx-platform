@@ -542,15 +542,24 @@ MAIN_MAKO_TEMPLATES_BASE = [
     OPENEDX_ROOT / 'core' / 'djangoapps' / 'dark_lang' / 'templates',
     OPENEDX_ROOT / 'core' / 'lib' / 'license' / 'templates',
 ]
+
+
 def _make_main_mako_templates(settings):
+    """
+    Derives the final MAKO_TEMPLATES['main'] setting from other settings.
+    """
     if settings.ENABLE_COMPREHENSIVE_THEMING:
         themes_dirs = get_theme_base_dirs_from_settings(settings.COMPREHENSIVE_THEME_DIRS)
         for theme in get_themes_unchecked(themes_dirs, PROJECT_ROOT):
             if theme.themes_base_dir not in settings.MAIN_MAKO_TEMPLATES_BASE:
                 settings.MAIN_MAKO_TEMPLATES_BASE.insert(0, theme.themes_base_dir)
     return settings.MAIN_MAKO_TEMPLATES_BASE
-MAIN_MAKO_TEMPLATES = _make_main_mako_templates
-derived("MAIN_MAKO_TEMPLATES")
+MAKO_TEMPLATES['main'] = _make_main_mako_templates
+MAKO_TEMPLATES_MAIN = {
+    'getter': lambda settings: getattr(settings, 'MAKO_TEMPLATES')['main'],
+    'setter': lambda settings, value: getattr(settings, 'MAKO_TEMPLATES').update({'main': value})
+}
+derived(MAKO_TEMPLATES_MAIN)
 
 # Django templating
 TEMPLATES = [
@@ -1027,9 +1036,10 @@ USE_L10N = True
 STATICI18N_ROOT = PROJECT_ROOT / "static"
 STATICI18N_OUTPUT_DIR = "js/i18n"
 
+
 # Localization strings (e.g. django.po) are under these directories
 def _make_locale_paths(settings):
-    locale_paths = [settings.REPO_ROOT + '/conf/locale',]  # edx-platform/conf/locale/
+    locale_paths = [settings.REPO_ROOT + '/conf/locale']  # edx-platform/conf/locale/
     if settings.ENABLE_COMPREHENSIVE_THEMING:
         # Add locale paths to settings for comprehensive theming.
         for locale_path in settings.COMPREHENSIVE_THEME_LOCALE_PATHS:

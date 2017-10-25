@@ -51,4 +51,3 @@ os.environ['REQUIRE_BUILD_PROFILE_OPTIMIZE'] = 'none'
 ########################## Derive Any Derived Settings  #######################
 
 derive_settings(sys.modules[__name__])
-MAKO_TEMPLATES['main'] = MAIN_MAKO_TEMPLATES

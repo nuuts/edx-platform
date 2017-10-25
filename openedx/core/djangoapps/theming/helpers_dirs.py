@@ -1,6 +1,9 @@
+"""
+Code which dynamically discovers comprehensive themes. Deliberately uses no Django settings,
+as the discovery happens during the initial setup of Django settings.
+"""
 import os
 from path import Path
-from django.conf import settings
 
 
 def get_theme_base_dirs_from_settings(theme_dirs=None):
@@ -20,39 +23,21 @@ def get_theme_base_dirs_from_settings(theme_dirs=None):
     return theme_base_dirs
 
 
-def get_theme_base_dirs_unchecked():
-    """
-    Return base directories that contains all the themes.
-
-    Example:
-        >> get_theme_base_dirs_unchecked()
-        ['/edx/app/ecommerce/ecommerce/themes']
-
-    Returns:
-         (List of Paths): Base theme directory paths
-    """
-    theme_dirs = getattr(settings, "COMPREHENSIVE_THEME_DIRS", None)
-
-    return get_theme_base_dirs_from_settings(theme_dirs)
-
-
-def get_themes_unchecked(themes_dirs=None):
+def get_themes_unchecked(themes_dirs, project_root=None):
     """
     Returns a list of all themes known to the system.
 
     Args:
-        themes_dirs (list): (Optional) Paths to themes base directory
+        themes_dirs (list): Paths to themes base directory
+        project_root (str): (optional) Path to project root
     Returns:
         List of themes known to the system.
     """
-    if themes_dirs:
-        themes_base_dirs = [Path(themes_dir) for themes_dir in themes_dirs]
-    else:
-        themes_base_dirs = get_theme_base_dirs_unchecked()
+    themes_base_dirs = [Path(themes_dir) for themes_dir in themes_dirs]
     # pick only directories and discard files in themes directory
     themes = []
     for themes_dir in themes_base_dirs:
-        themes.extend([Theme(name, name, themes_dir) for name in get_theme_dirs(themes_dir)])
+        themes.extend([Theme(name, name, themes_dir, project_root) for name in get_theme_dirs(themes_dir)])
 
     return themes
 
@@ -81,7 +66,7 @@ def is_theme_dir(_dir):
     return bool(os.path.isdir(_dir) and theme_sub_directories.intersection(os.listdir(_dir)))
 
 
-def get_project_root_name():
+def get_project_root_name_from_settings(project_root):
     """
     Return root name for the current project
 
@@ -92,10 +77,13 @@ def get_project_root_name():
         >> get_project_root_name()
         'cms'
 
+    Args:
+        project_root (str): Root directory of the project.
+
     Returns:
         (str): component name of platform e.g lms, cms
     """
-    root = Path(settings.PROJECT_ROOT)
+    root = Path(project_root)
     if root.name == "":
         root = root.parent
     return root.name
@@ -108,8 +96,9 @@ class Theme(object):
     name = ''
     theme_dir_name = ''
     themes_base_dir = None
+    project_root = None
 
-    def __init__(self, name='', theme_dir_name='', themes_base_dir=None):
+    def __init__(self, name='', theme_dir_name='', themes_base_dir=None, project_root=None):
         """
         init method for Theme
 
@@ -121,6 +110,7 @@ class Theme(object):
         self.name = name
         self.theme_dir_name = theme_dir_name
         self.themes_base_dir = themes_base_dir
+        self.project_root = project_root
 
     def __eq__(self, other):
         """
@@ -150,7 +140,7 @@ class Theme(object):
         Returns:
             Path: absolute path to current theme's contents
         """
-        return Path(self.themes_base_dir) / self.theme_dir_name / get_project_root_name()
+        return Path(self.themes_base_dir) / self.theme_dir_name / get_project_root_name_from_settings(self.project_root)
 
     @property
     def template_path(self):
@@ -160,7 +150,7 @@ class Theme(object):
         Returns:
             Path: absolute path to current theme's template directory
         """
-        return Path(self.theme_dir_name) / get_project_root_name() / 'templates'
+        return Path(self.theme_dir_name) / get_project_root_name_from_settings(self.project_root) / 'templates'
 
     @property
     def template_dirs(self):

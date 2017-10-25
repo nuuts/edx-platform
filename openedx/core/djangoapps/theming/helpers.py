@@ -5,16 +5,16 @@ import os
 import re
 from logging import getLogger
 
-from django.conf import ImproperlyConfigured, settings
+from django.conf import settings
 from path import Path
 
 from microsite_configuration import microsite
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.core.djangoapps.theming.helpers_dirs import (
-    get_theme_base_dirs_unchecked,
+    get_theme_base_dirs_from_settings,
     get_themes_unchecked,
     get_theme_dirs,
-    get_project_root_name,
+    get_project_root_name_from_settings,
     Theme
 )
 from request_cache.middleware import RequestCache
@@ -98,13 +98,30 @@ def get_all_theme_template_dirs():
     Returns:
         (list): list of directories containing theme templates.
     """
-    themes = get_themes()
+    themes = get_themes(get_theme_base_dirs_unchecked())
     template_paths = list()
 
     for theme in themes:
         template_paths.extend(theme.template_dirs)
 
     return template_paths
+
+
+def get_project_root_name():
+    """
+    Return root name for the current project
+
+    Example:
+        >> get_project_root_name()
+        'lms'
+        # from studio
+        >> get_project_root_name()
+        'cms'
+
+    Returns:
+        (str): component name of platform e.g lms, cms
+    """
+    return get_project_root_name_from_settings(settings.PROJECT_ROOT)
 
 
 def strip_site_theme_templates_path(uri):
@@ -195,6 +212,7 @@ def get_current_theme():
             name=site_theme.theme_dir_name,
             theme_dir_name=site_theme.theme_dir_name,
             themes_base_dir=get_theme_base_dir(site_theme.theme_dir_name),
+            project_root=get_project_root_name()
         )
     except ValueError as error:
         # Log exception message and return None, so that open source theme is used instead
@@ -259,7 +277,23 @@ def get_themes(themes_dir=None):
     """
     if not is_comprehensive_theming_enabled():
         return []
-    return get_themes_unchecked(themes_dir)
+    return get_themes_unchecked(themes_dir, settings.PROJECT_ROOT)
+
+
+def get_theme_base_dirs_unchecked():
+    """
+    Return base directories that contains all the themes.
+
+    Example:
+        >> get_theme_base_dirs_unchecked()
+        ['/edx/app/ecommerce/ecommerce/themes']
+
+    Returns:
+         (List of Paths): Base theme directory paths
+    """
+    theme_dirs = getattr(settings, "COMPREHENSIVE_THEME_DIRS", None)
+
+    return get_theme_base_dirs_from_settings(theme_dirs)
 
 
 def get_theme_base_dirs():

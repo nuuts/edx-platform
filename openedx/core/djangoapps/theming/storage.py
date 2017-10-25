@@ -16,9 +16,9 @@ from openedx.core.djangoapps.theming.helpers import (
     get_current_theme,
     get_theme_base_dir,
     get_themes,
-    is_comprehensive_theming_enabled
+    is_comprehensive_theming_enabled,
+    get_project_root_name
 )
-from openedx.core.djangoapps.theming.helpers_dirs import get_project_root_name
 
 
 class ThemeStorage(StaticFilesStorage):

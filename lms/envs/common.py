@@ -545,7 +545,7 @@ MAIN_MAKO_TEMPLATES_BASE = [
 def _make_main_mako_templates(settings):
     if settings.ENABLE_COMPREHENSIVE_THEMING:
         themes_dirs = get_theme_base_dirs_from_settings(settings.COMPREHENSIVE_THEME_DIRS)
-        for theme in get_themes_unchecked(themes_dirs):
+        for theme in get_themes_unchecked(themes_dirs, PROJECT_ROOT):
             if theme.themes_base_dir not in settings.MAIN_MAKO_TEMPLATES_BASE:
                 settings.MAIN_MAKO_TEMPLATES_BASE.insert(0, theme.themes_base_dir)
     return settings.MAIN_MAKO_TEMPLATES_BASE

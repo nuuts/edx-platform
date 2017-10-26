@@ -20,11 +20,7 @@ class TestDerivedSettings(TestCase):
         derived('DERIVED_VALUE', 'ANOTHER_DERIVED_VALUE')
         self.DICT_VALUE = {}
         self.DICT_VALUE['test_key'] = lambda settings: self.DERIVED_VALUE * 3
-        DERIVED_DICT_VALUE = {
-            'getter': lambda settings: getattr(settings, 'DICT_VALUE')['test_key'],
-            'setter': lambda settings, value: getattr(settings, 'DICT_VALUE').update({'test_key': value})
-        }
-        derived(DERIVED_DICT_VALUE)
+        derived(('DICT_VALUE', 'test_key'))
 
     def test_derived_settings_are_derived(self):
         derive_settings(self)

@@ -555,11 +555,7 @@ def _make_main_mako_templates(settings):
                 settings.MAIN_MAKO_TEMPLATES_BASE.insert(0, theme.themes_base_dir)
     return settings.MAIN_MAKO_TEMPLATES_BASE
 MAKO_TEMPLATES['main'] = _make_main_mako_templates
-MAKO_TEMPLATES_MAIN = {
-    'getter': lambda settings: getattr(settings, 'MAKO_TEMPLATES')['main'],
-    'setter': lambda settings, value: getattr(settings, 'MAKO_TEMPLATES').update({'main': value})
-}
-derived(MAKO_TEMPLATES_MAIN)
+derived(['MAKO_TEMPLATES', 'main'])
 
 # Django templating
 TEMPLATES = [

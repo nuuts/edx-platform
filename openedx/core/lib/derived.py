@@ -29,25 +29,23 @@ def derive_settings(module):
     Params:
         - module (module): Module to which the derived settings will be added.
     """
-    for setting_name in __DERIVED:
-        if isinstance(setting_name, six.string_types):
+    for derived in __DERIVED:
+        if isinstance(derived, six.string_types):
             # For a simple attribute, the getter and setter are simply getattr and setattr.
-            setting = getattr(module, setting_name)
+            setting = getattr(module, derived)
             if callable(setting):
                 setting_val = setting(module)
-                setattr(module, setting_name, setting_val)
-        elif isinstance(setting_name, dict):
-            # To allow more complex values such as values of dictionary with a particular key,
-            # you can write your own getter and setter and register them as a dictionary.
-            # A dictionary setting is expected to have two keys - 'getter' and 'setter'.
-            # The 'getter' value is a callable that gets the derived value from the module.
-            # The 'setter' value is a callable that sets the derived value into the module.
-            getter = setting_name['getter']
-            setting = getter(module)
-            if callable(setting):
-                setting_val = setting(module)
-                setter = setting_name['setter']
-                setter(module, setting_val)
+                setattr(module, derived, setting_val)
+        elif isinstance(derived, (list, tuple)):
+            # If a list/tuple, two elements are expected - else ignore.
+            if len(derived) == 2:
+                # Both elements are expected to be strings.
+                # The first string is the attribute which is expected to be a dictionary.
+                # The second string is a key in that dictionary containing a derived setting.
+                setting = getattr(module, derived[0])[derived[1]]
+                if callable(setting):
+                    setting_val = setting(module)
+                    getattr(module, derived[0]).update({derived[1]: setting_val})
 
 
 def clear_for_tests():

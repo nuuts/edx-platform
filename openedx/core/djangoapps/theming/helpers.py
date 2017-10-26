@@ -98,7 +98,7 @@ def get_all_theme_template_dirs():
     Returns:
         (list): list of directories containing theme templates.
     """
-    themes = get_themes(get_theme_base_dirs_unchecked())
+    themes = get_themes()
     template_paths = list()
 
     for theme in themes:
@@ -277,6 +277,8 @@ def get_themes(themes_dir=None):
     """
     if not is_comprehensive_theming_enabled():
         return []
+    if themes_dir is None:
+        themes_dir = get_theme_base_dirs_unchecked()
     return get_themes_unchecked(themes_dir, settings.PROJECT_ROOT)
 
 

@@ -86,6 +86,28 @@ engine = Engine(dirs=settings.DEFAULT_TEMPLATE_ENGINE['DIRS'])
 source, template_path = Loader(engine).load_template_source(path)
 %>${source | n, decode.utf8}</%def>
 
+<%def name="studio-frontend(page, lang='en')"%>
+    <%doc>
+        Loads a studio-frontend page, with the necessary context. Context is expected
+        as a dictionary in the body of this tag.
+    <%doc>
+    <%
+        from django.template import Template, Context
+        body['lang'] = lang
+        body['locale'] = lang
+        return Template("""
+            <script type="text/javascript" id='courseContext'>
+                const courseContext = {% json.dumps(body) %};
+            </script>
+            {% load render_bundle from webpack_loader %}
+            {% render_bundle page %}
+        """).render(Context({
+            'body': capture(caller.body),
+            'page': page
+        }))
+    %>
+</%def>
+
 <%def name="webpack(entry)">
     <%doc>
         Loads Javascript onto your page from a Webpack-generated bundle.

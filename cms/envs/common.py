@@ -994,7 +994,7 @@ INSTALLED_APPS = [
     'webpack_loader',
 
     # Theming
-    'openedx.core.djangoapps.theming',
+    'openedx.core.djangoapps.theming.apps.ThemingConfig',
 
     # Site configuration for theming and behavioral modification
     'openedx.core.djangoapps.site_configuration',

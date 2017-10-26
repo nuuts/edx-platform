@@ -49,6 +49,7 @@ def derive_settings(module):
                 setter = setting_name['setter']
                 setter(module, setting_val)
 
+
 def clear_for_tests():
     """
     Clears all settings to be derived. For tests only.

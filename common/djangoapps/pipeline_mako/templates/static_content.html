@@ -98,18 +98,30 @@ source, template_path = Loader(engine).load_template_source(path)
     </%doc>
     <%
         from django.template import Template, Context
+        from webpack_loader.exceptions import WebpackLoaderBadStatsError
         import json
+
+        def _erics_hacky_helper(input_dict):
+            # dumps a dict to json in a way that can be consumed
+            ret = "{"
+            print input_dict
+            for key in input_dict:
+                ret = "{} {}: \"{}\",".format(ret, key, input_dict[key])
+            ret += "}"
+            return ret
+
         body = capture(caller.body)
         body_dict = json.loads(body)
         body_dict['lang'] = lang
         return Template("""
             <script type="text/javascript" id='courseContext'>
-                const courseContext = {{ body }};
+                var courseContext = {% autoescape off %}{{ body }}{% endautoescape %};
             </script>
+            <div id="root"></div>
             {% load render_bundle from webpack_loader %}
             {% render_bundle page %}
         """).render(Context({
-            'body': body_dict,
+            'body': _erics_hacky_helper(body_dict),
             'page': page
         }))
     %>

@@ -2123,14 +2123,12 @@ def skip_activation_email(user, do_external_auth, running_pipeline, third_party_
         )
     )
 
-    skip_email = (
+    return (
         settings.FEATURES.get('SKIP_EMAIL_VALIDATION', None) or
         settings.FEATURES.get('AUTOMATIC_AUTH_FOR_TESTING') or
         (settings.FEATURES.get('BYPASS_ACTIVATION_EMAIL_FOR_EXTAUTH') and do_external_auth) or
         (third_party_provider and third_party_provider.skip_email_verification and valid_email)
     )
-
-    return skip_email
 
 
 def _enroll_user_in_pending_courses(student):
